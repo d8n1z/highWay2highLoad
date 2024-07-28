@@ -41,22 +41,33 @@ A `softare system` is "mapped" using following abstract terms and concepts:
 - High-level overview of the system and its interactions with other entities (i.e. user, other systems)
 ```mermaid
 C4Context
-    title Autonomous Vehicle Fleet Management System
+    title Autonomous Vehicle Fleet Management System (AVFMS)
 
     Person(fm, "Fleet Manager", "Interacts with the system via mobile app to monitor and control the fleet")
-    System_Boundary(autonomous_vehicle_system, "Autonomous Vehicle Fleet Management System") {
+    System_Boundary(avfms, "Autonomous Vehicle Fleet Management System") {
         System(ma, "Mobile App", "Allows fleet managers to control and monitor the fleet")
         System(tms, "Traffic Management System", "Manages real-time traffic data and optimizes routes")
         System(av, "Autonomous Vehicles", "Fleet of self-driving vehicles")
-        System(cs, "Cloud Service", "Hosts the backend services and stores data")
+        System(dt, "Digital Twins", "Hosts the backend services and stores data")
     }
 
-    System_Ext(tpi, "Third-Party Integrations (Mapping Service, Weather Service)", "Provides additional functionalities such as route optimization and weather-aware navigation")
+    System_Boundary(ext, "External System Boundary") {
+        System_Ext(tpi, "Third-Party Integrations (Mapping Service, GNSS, Weather Service)", "Provides additional functionalities such as route optimization and weather-aware navigation")
+    }
 
     Rel(fm, ma, "Interacts with")
     Rel(fm, tms, "Interacts with")
     Rel(fm, av, "Monitors and controls")
-    Rel(tpi, cs, "Integrates with")
+    Rel(tpi, dt, "Integrates with")
+    BiRel(av, dt, "Integrates with")
 
+    UpdateElementStyle(fm, $fontColor="orange", $bgColor="black", $borderColor="red")
+    UpdateElementStyle(tpi, $fontColor="orange", $bgColor="black", $borderColor="red")
+    UpdateElementStyle(ma, $fontColor="orange", $bgColor="black", $borderColor="red")
+    UpdateElementStyle(tms, $fontColor="orange", $bgColor="black", $borderColor="red")
+    UpdateElementStyle(av, $fontColor="orange", $bgColor="black", $borderColor="red")
+    UpdateElementStyle(dt, $fontColor="orange", $bgColor="black", $borderColor="red")
+
+    UpdateLayoutConfig($c4ShapeInRow="5", $c4BoundaryInRow="1")
 
 ```
