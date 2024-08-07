@@ -256,6 +256,124 @@ Or in a galaxy far far away:
 - WasmEdge: Bring the cloud-native and serverless application paradigms to Edge Computing. (this is an out-of-spectrum suggestion, i would like to complement it with WebAssembly as we are kind of 'dreaming' in this bullet point)
 
 
+### Back of the Envelope
+Certainly! Below is the same set of calculations written in Markdown format, which you can render in any Markdown-compatible editor or viewer.
+
+### Back-of-the-Envelope Estimates
+
+#### Assumptions:
+1. **Number of Users:** 10,000
+2. **Average Devices per User:** 5
+3. **Data Points per Device per Day:** 1,000 (assuming each device sends data every 1.5 minutes on average)
+4. **Size of Each Data Point:** 500 bytes
+5. **Retention Period for Time-Series Data:** 1 year
+
+#### Calculations:
+
+1. **Total Number of Devices:**
+
+   ```
+   Total Devices = Number of Users * Average Devices per User
+                 = 10,000 * 5
+                 = 50,000
+   ```
+
+2. **Daily Data Points:**
+
+   ```
+   Daily Data Points per Device = 1,000
+
+   Total Daily Data Points = Total Devices * Daily Data Points per Device
+                           = 50,000 * 1,000
+                           = 50,000,000
+   ```
+
+3. **Daily Data Generation:**
+
+   ```
+   Daily Data (in bytes) = Total Daily Data Points * Size of Each Data Point
+                         = 50,000,000 * 500
+                         = 25,000,000,000 bytes
+                         = 25 GB
+   ```
+
+4. **Yearly Data Generation:**
+
+   ```
+   Yearly Data (in GB) = Daily Data (in GB) * 365
+                       = 25 * 365
+                       = 9,125 GB
+                       ≈ 9 TB
+   ```
+
+5. **Storage Requirements:**
+
+   - **Time-Series Database:** Approximately 9 TB for a year.
+   - **Additional Storage (for backups, logs, metadata):** Assume an extra 20% of the total, which is about 1.8 TB.
+
+   ```
+   Total Storage Required = 9 TB + 1.8 TB
+                          = 10.8 TB
+                          ≈ 11 TB
+   ```
+
+6. **Cost Estimates:**
+
+   - **Cloud Storage Cost:**
+     - Assume $0.023 per GB per month (AWS S3 Standard Storage).
+
+     ```
+     Monthly Storage Cost = 11 TB * 1,024 GB/TB * $0.023/GB
+                          ≈ $259.84
+
+     Yearly Storage Cost = $259.84 * 12
+                         ≈ $3,118.08
+     ```
+
+   - **Compute Costs:**
+     - **API Gateway:** Assume 1 million requests per month free, then $3.50 per million requests.
+     - **Lambda Functions (for processing):** Assume $0.20 per million requests and average execution time of 100ms per request.
+
+     ```
+     Monthly Requests = 50 million * 30
+                      ≈ 1,500 million requests
+
+     Monthly API Gateway Cost = (1,500 - 1) * $3.50
+                              ≈ $5,247.50
+
+     Monthly Lambda Cost = (1,500 million * 100 ms) / (1,000 * 60 * 60) hours * $0.20
+                         ≈ $8.33
+     ```
+
+   - **Infrastructure Costs (Kubernetes, Load Balancers):**
+     - Assume 10 nodes, each costing $100 per month.
+
+     ```
+     Monthly Infrastructure Cost = 10 * $100
+                                 = $1,000
+     ```
+
+7. **Total Monthly and Yearly Costs:**
+
+   ```
+   Total Monthly Cost = Monthly Storage Cost + API Gateway Cost + Lambda Cost + Infrastructure Cost
+                      = $259.84 + $5,247.50 + $8.33 + $1,000
+                      ≈ $6,515.67
+
+   Total Yearly Cost = $6,515.67 * 12
+                     ≈ $78,188.04
+   ```
+
+### Summary:
+- **Total Devices:** 50,000
+- **Daily Data Generation:** 25 GB
+- **Yearly Data Generation:** 9 TB
+- **Total Storage Required:** 11 TB
+- **Total Monthly Cost:** Approximately $6,515.67 USD
+- **Total Yearly Cost:** Approximately $78,188.04 USD
+
+These estimates provide a rough idea of the resources and costs involved in deploying and maintaining a smart home IoT system at scale. Adjustments can be made based on more accurate usage patterns and specific infrastructure choices.
 ### A Probable Sprint Zero Topology
 
 >*Believe me sir, I tried to reflect and populate but then again 'time' has been proven to be the scarcest resource*
+
