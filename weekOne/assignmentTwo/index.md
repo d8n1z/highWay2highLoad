@@ -256,9 +256,6 @@ Or in a galaxy far far away:
 - WasmEdge: Bring the cloud-native and serverless application paradigms to Edge Computing. (this is an out-of-spectrum suggestion, i would like to complement it with WebAssembly as we are kind of 'dreaming' in this bullet point)
 
 
-### Back of the Envelope
-Certainly! Below is the same set of calculations written in Markdown format, which you can render in any Markdown-compatible editor or viewer.
-
 ### Back-of-the-Envelope Estimates
 
 #### Assumptions:
@@ -267,29 +264,31 @@ Certainly! Below is the same set of calculations written in Markdown format, whi
 3. **Data Points per Device per Day:** 1,000 (assuming each device sends data every 1.5 minutes on average)
 4. **Size of Each Data Point:** 500 bytes
 5. **Retention Period for Time-Series Data:** 1 year
+6. **Number of Requests per Device per Day:**
+   - Control/Command Requests: 100 per device
+   - Data Reporting Requests: 1,000 per device
+7. **Database Operations per Request:**
+   - Control/Command Requests: 1 write, 1 read
+   - Data Reporting Requests: 1 write
 
-#### Calculations:
+### Calculations:
 
-1. **Total Number of Devices:**
-
+#### 1. **Total Number of Devices:**
    ```
    Total Devices = Number of Users * Average Devices per User
                  = 10,000 * 5
                  = 50,000
    ```
 
-2. **Daily Data Points:**
-
+#### 2. **Daily Data Points:**
    ```
    Daily Data Points per Device = 1,000
-
    Total Daily Data Points = Total Devices * Daily Data Points per Device
                            = 50,000 * 1,000
                            = 50,000,000
    ```
 
-3. **Daily Data Generation:**
-
+#### 3. **Daily Data Generation:**
    ```
    Daily Data (in bytes) = Total Daily Data Points * Size of Each Data Point
                          = 50,000,000 * 500
@@ -297,8 +296,7 @@ Certainly! Below is the same set of calculations written in Markdown format, whi
                          = 25 GB
    ```
 
-4. **Yearly Data Generation:**
-
+#### 4. **Yearly Data Generation:**
    ```
    Yearly Data (in GB) = Daily Data (in GB) * 365
                        = 25 * 365
@@ -306,73 +304,141 @@ Certainly! Below is the same set of calculations written in Markdown format, whi
                        ≈ 9 TB
    ```
 
-5. **Storage Requirements:**
-
+#### 5. **Storage Requirements:**
    - **Time-Series Database:** Approximately 9 TB for a year.
    - **Additional Storage (for backups, logs, metadata):** Assume an extra 20% of the total, which is about 1.8 TB.
-
    ```
    Total Storage Required = 9 TB + 1.8 TB
                           = 10.8 TB
                           ≈ 11 TB
    ```
 
-6. **Cost Estimates:**
+#### 6. **Requests and Database Operations:**
 
-   - **Cloud Storage Cost:**
-     - Assume $0.023 per GB per month (AWS S3 Standard Storage).
-
-     ```
-     Monthly Storage Cost = 11 TB * 1,024 GB/TB * $0.023/GB
-                          ≈ $259.84
-
-     Yearly Storage Cost = $259.84 * 12
-                         ≈ $3,118.08
-     ```
-
-   - **Compute Costs:**
-     - **API Gateway:** Assume 1 million requests per month free, then $3.50 per million requests.
-     - **Lambda Functions (for processing):** Assume $0.20 per million requests and average execution time of 100ms per request.
-
-     ```
-     Monthly Requests = 50 million * 30
-                      ≈ 1,500 million requests
-
-     Monthly API Gateway Cost = (1,500 - 1) * $3.50
-                              ≈ $5,247.50
-
-     Monthly Lambda Cost = (1,500 million * 100 ms) / (1,000 * 60 * 60) hours * $0.20
-                         ≈ $8.33
-     ```
-
-   - **Infrastructure Costs (Kubernetes, Load Balancers):**
-     - Assume 10 nodes, each costing $100 per month.
-
-     ```
-     Monthly Infrastructure Cost = 10 * $100
-                                 = $1,000
-     ```
-
-7. **Total Monthly and Yearly Costs:**
-
+**Control/Command Requests:**
    ```
-   Total Monthly Cost = Monthly Storage Cost + API Gateway Cost + Lambda Cost + Infrastructure Cost
-                      = $259.84 + $5,247.50 + $8.33 + $1,000
-                      ≈ $6,515.67
+   Total Control Requests per Day = Total Devices * Control Requests per Device per Day
+                                  = 50,000 * 100
+                                  = 5,000,000
+   ```
 
-   Total Yearly Cost = $6,515.67 * 12
-                     ≈ $78,188.04
+**Data Reporting Requests:**
+   ```
+   Total Data Reporting Requests per Day = Total Devices * Data Reporting Requests per Device per Day
+                                         = 50,000 * 1,000
+                                         = 50,000,000
+   ```
+
+**Total Requests per Day:**
+   ```
+   Total Requests per Day = Total Control Requests per Day + Total Data Reporting Requests per Day
+                          = 5,000,000 + 50,000,000
+                          = 55,000,000
+   ```
+
+**Write Operations:**
+   ```
+   Write Operations for Control Requests per Day = Total Control Requests per Day
+                                                 = 5,000,000
+
+   Write Operations for Data Reporting Requests per Day = Total Data Reporting Requests per Day
+                                                        = 50,000,000
+
+   Total Write Operations per Day = 5,000,000 + 50,000,000
+                                  = 55,000,000
+   ```
+
+**Read Operations:**
+   ```
+   Read Operations for Control Requests per Day = Total Control Requests per Day
+                                                = 5,000,000
+
+   Total Read Operations per Day = 5,000,000
+   ```
+
+#### 7. **Cost Estimates:**
+
+**Cloud Storage Cost:**
+   - Assume $0.023 per GB per month (AWS S3 Standard Storage).
+   ```
+   Monthly Storage Cost = 11 TB * 1,024 GB/TB * $0.023/GB
+                        ≈ $259.84
+
+   Yearly Storage Cost = $259.84 * 12
+                       ≈ $3,118.08
+   ```
+
+**API Gateway Cost:**
+   - Assume $3.50 per million requests beyond the free tier.
+   ```
+   Monthly Requests = Total Requests per Day * 30
+                    = 55,000,000 * 30
+                    = 1,650,000,000
+
+   Monthly API Gateway Cost = (1,650 - 1) * 3.50
+                            ≈ $5,772.50
+   ```
+
+**Lambda Function Cost:**
+   - Assume $0.20 per million requests and average execution time of 100ms per request.
+   ```
+   Monthly Lambda Cost = (1,650,000,000 * 100 ms) / (1,000 * 60 * 60) hours * $0.20
+                       ≈ $9.17
+   ```
+
+**Database Cost:**
+   - Assume $0.10 per million write/read operations (an example cost, actual cost may vary).
+   ```
+   Monthly Write Operations = Total Write Operations per Day * 30
+                            = 55,000,000 * 30
+                            = 1,650,000,000
+
+   Monthly Read Operations = Total Read Operations per Day * 30
+                           = 5,000,000 * 30
+                           = 150,000,000
+
+   Monthly Database Write Cost = (1,650,000,000 / 1,000,000) * $0.10
+                               = 1,650 * $0.10
+                               = $165.00
+
+   Monthly Database Read Cost = (150,000,000 / 1,000,000) * $0.10
+                              = 150 * $0.10
+                              = $15.00
+
+   Total Monthly Database Cost = $165.00 + $15.00
+                               = $180.00
+   ```
+
+**Infrastructure Costs (Kubernetes, Load Balancers):**
+   - Assume 10 nodes, each costing $100 per month.
+   ```
+   Monthly Infrastructure Cost = 10 * $100
+                               = $1,000
+   ```
+
+#### 8. **Total Monthly and Yearly Costs:**
+   ```
+   Total Monthly Cost = Monthly Storage Cost + API Gateway Cost + Lambda Cost + Database Cost + Infrastructure Cost
+                      = $259.84 + $5,772.50 + $9.17 + $180.00 + $1,000
+                      ≈ $7,221.51
+
+   Total Yearly Cost = $7,221.51 * 12
+                     ≈ $86,658.12
    ```
 
 ### Summary:
-- **Total Devices:** 50,000
-- **Daily Data Generation:** 25 GB
-- **Yearly Data Generation:** 9 TB
-- **Total Storage Required:** 11 TB
-- **Total Monthly Cost:** Approximately $6,515.67 USD
-- **Total Yearly Cost:** Approximately $78,188.04 USD
 
-These estimates provide a rough idea of the resources and costs involved in deploying and maintaining a smart home IoT system at scale. Adjustments can be made based on more accurate usage patterns and specific infrastructure choices.
+1. **Total Devices:** 50,000
+2. **Daily Data Generation:** 25 GB
+3. **Yearly Data Generation:** 9 TB
+4. **Total Storage Required:** 11 TB
+5. **Daily Requests:** 55,000,000
+6. **Daily Database Writes:** 55,000,000
+7. **Daily Database Reads:** 5,000,000
+8. **Total Monthly Cost:** Approximately $7,221.51 USD
+9. **Total Yearly Cost:** Approximately $86,658.12 USD
+
+
 ### A Probable Sprint Zero Topology
 
 >*Believe me sir, I tried to reflect and populate but then again 'time' has been proven to be the scarcest resource*
